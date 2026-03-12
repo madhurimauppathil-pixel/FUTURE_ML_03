@@ -1,3 +1,11 @@
+import subprocess, sys
+
+try:
+    import spacy
+    spacy.load("en_core_web_sm")
+except OSError:
+    subprocess.run([sys.executable, "-m", "spacy", "download", "en_core_web_sm"], check=True)
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -11,7 +19,7 @@ from sample_data import JOB_DATA_SCIENTIST, JOB_BACKEND_ENGINEER, RESUMES
 
 st.set_page_config(page_title="Resume Screener", layout="wide", page_icon="📄")
 
-# ── Sidebar ──────────────────────────────────────────────────────────────────
+# ── Sidebar ───────────────────────────────────────────────────────────────────
 st.sidebar.title("⚙️ Configuration")
 
 job_choice = st.sidebar.selectbox(
@@ -24,7 +32,7 @@ st.sidebar.markdown("---")
 st.sidebar.markdown("### Upload Custom Resume")
 uploaded = st.sidebar.file_uploader("Upload .txt resume", type=["txt"], accept_multiple_files=True)
 
-# ── Run Screener ─────────────────────────────────────────────────────────────
+# ── Run Screener ──────────────────────────────────────────────────────────────
 screener = ResumeScreener()
 
 resumes = list(RESUMES)
@@ -36,7 +44,7 @@ with st.spinner("Screening candidates..."):
     df = screener.screen(resumes, job)
 
 # ── Header ────────────────────────────────────────────────────────────────────
-st.title(f"📄 Resume Screening Dashboard")
+st.title("📄 Resume Screening Dashboard")
 st.subheader(f"Role: {job['title']}")
 
 col1, col2, col3, col4 = st.columns(4)
@@ -95,58 +103,4 @@ with c3:
         matched = set(row['matched_required'])
         heatmap_data.append([1 if s in matched else 0 for s in required])
     hm = pd.DataFrame(heatmap_data, index=df['name'].str.split().str[0], columns=required)
-    fig3 = px.imshow(hm, color_continuous_scale=["#c0392b", "#27ae60"],
-                     zmin=0, zmax=1, text_auto=True, aspect="auto")
-    fig3.update_layout(height=350, coloraxis_showscale=False)
-    st.plotly_chart(fig3, use_container_width=True)
-
-with c4:
-    st.markdown("#### 🫧 Experience vs Score")
-    fig4 = px.scatter(df, x='experience_years', y='total_score',
-                      size='total_skills_found', color='skill_gap_count',
-                      text='name', color_continuous_scale='RdYlGn_r',
-                      size_max=40, labels={'experience_years': 'Years of Experience',
-                                          'total_score': 'Total Score'})
-    fig4.add_hline(y=75, line_dash="dash", line_color="green")
-    fig4.update_traces(textposition='top center')
-    fig4.update_layout(height=350)
-    st.plotly_chart(fig4, use_container_width=True)
-
-# ── Detailed Table ────────────────────────────────────────────────────────────
-st.markdown("---")
-st.markdown("#### 📋 Detailed Candidate Rankings")
-
-display_df = df[['name', 'total_score', 'grade', 'fit_label',
-                  'tfidf_similarity', 'skill_match_score',
-                  'experience_years', 'total_skills_found', 'skill_gap_count']].copy()
-display_df.columns = ['Name', 'Total Score', 'Grade', 'Fit',
-                       'Semantic Sim', 'Skill Match',
-                       'Exp (yrs)', 'Skills Found', 'Skill Gaps']
-
-st.dataframe(
-    display_df.style.background_gradient(subset=['Total Score'], cmap='RdYlGn'),
-    use_container_width=True
-)
-
-# ── Per-candidate drill-down ──────────────────────────────────────────────────
-st.markdown("---")
-st.markdown("#### 🔍 Candidate Deep Dive")
-selected = st.selectbox("Select Candidate", df['name'].tolist())
-row = df[df['name'] == selected].iloc[0]
-
-d1, d2, d3 = st.columns(3)
-d1.metric("Total Score", f"{row['total_score']:.1f}/100", delta=row['grade'])
-d2.metric("Experience", f"{row['experience_years']} yrs")
-d3.metric("Skill Gaps", row['skill_gap_count'])
-
-col_a, col_b = st.columns(2)
-with col_a:
-    if row['matched_required']:
-        st.success(f"✅ **Matched Required:** {', '.join(row['matched_required'])}")
-    if row['matched_preferred']:
-        st.info(f"⭐ **Matched Preferred:** {', '.join(row['matched_preferred'])}")
-with col_b:
-    if row['missing_required']:
-        st.error(f"❌ **Missing Required:** {', '.join(row['missing_required'])}")
-    if row['missing_preferred']:
-        st.warning(f"⚠️ **Missing Preferred:** {', '.join(row['missing_preferred'])}")
+    fig3 = px.imshow(hm, color_continu
