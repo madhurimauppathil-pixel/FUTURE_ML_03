@@ -344,6 +344,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(
 </html>
 """
 
-components.html(html, height=4000, scrolling=True)
-   
-               
+components.html(html, height=3200, scrolling=False)
