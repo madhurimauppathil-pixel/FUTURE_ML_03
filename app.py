@@ -1,10 +1,8 @@
-import subprocess, sys
-
-try:
-    import spacy
-    spacy.load("en_core_web_sm")
-except OSError:
-    subprocess.run([sys.executable, "-m", "spacy", "download", "en_core_web_sm"], check=True)
+import nltk
+nltk.download('punkt', quiet=True)
+nltk.download('stopwords', quiet=True)
+nltk.download('averaged_perceptron_tagger', quiet=True)
+nltk.download('wordnet', quiet=True)
 
 import streamlit as st
 import pandas as pd
