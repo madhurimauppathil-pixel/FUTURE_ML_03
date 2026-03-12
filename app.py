@@ -17,8 +17,29 @@ st.set_page_config(page_title="Resume Screener", layout="wide", page_icon="📄"
 st.markdown("""
 <style>
 #MainMenu, footer, header { visibility: hidden; }
-.main .block-container { padding: 0 !important; max-width: 100% !important; }
+.main .block-container {
+    padding: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+}
+.main {
+    padding: 0 !important;
+    margin: 0 !important;
+}
 [data-testid="stSidebar"] { display: none; }
+[data-testid="stAppViewContainer"] {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+iframe {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+section.main > div {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -55,7 +76,8 @@ html = f"""
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
 * {{ box-sizing:border-box; margin:0; padding:0; }}
-body {{ background:#f7f5f0; }}
+html, body {{ margin:0; padding:0; overflow-x:hidden; background:#f7f5f0; }}
+#root {{ margin:0; padding:0; }}
 ::-webkit-scrollbar {{ width:4px; }}
 ::-webkit-scrollbar-thumb {{ background:#3a3a3a; border-radius:4px; }}
 .tog {{ cursor:pointer; transition:background 0.15s; }}
@@ -84,7 +106,6 @@ function App() {{
     React.createElement('div', {{
       style: {{ width:300, background:"#1a1a1a", position:"fixed", top:0, left:0, height:"100vh", overflowY:"auto", display:"flex", flexDirection:"column", padding:"48px 36px", flexShrink:0 }}
     }},
-      // Title
       React.createElement('div', {{ style:{{ marginBottom:36 }} }},
         React.createElement('div', {{ style:{{ fontFamily:"'Cormorant Garamond',serif", fontSize:22, fontWeight:500, color:"#f5f0e8", letterSpacing:"0.02em", marginBottom:4 }} }}, "Resume Screener"),
         React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#4a4040", letterSpacing:"0.2em", textTransform:"uppercase" }} }}, "Candidate Analysis")
@@ -92,7 +113,6 @@ function App() {{
 
       React.createElement('div', {{ style:{{ height:1, background:"#2a2a2a", marginBottom:28 }} }}),
 
-      // Role
       React.createElement('div', {{ style:{{ marginBottom:28 }} }},
         React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#4a4040", textTransform:"uppercase", letterSpacing:"0.18em", marginBottom:10 }} }}, "Role"),
         React.createElement('div', {{ style:{{ fontFamily:"'Cormorant Garamond',serif", fontSize:20, fontWeight:500, color:"#f5f0e8", lineHeight:1.3 }} }}, "Senior Data Scientist"),
@@ -101,7 +121,6 @@ function App() {{
 
       React.createElement('div', {{ style:{{ height:1, background:"#2a2a2a", marginBottom:28 }} }}),
 
-      // Job Description
       React.createElement('div', {{ style:{{ marginBottom:28 }} }},
         React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#4a4040", textTransform:"uppercase", letterSpacing:"0.18em", marginBottom:12 }} }}, "Job Description"),
         React.createElement('p', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:11.5, color:"#6a6050", lineHeight:1.9 }} }},
@@ -111,7 +130,6 @@ function App() {{
 
       React.createElement('div', {{ style:{{ height:1, background:"#2a2a2a", marginBottom:28 }} }}),
 
-      // Required Skills
       React.createElement('div', {{ style:{{ marginBottom:28 }} }},
         React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#4a4040", textTransform:"uppercase", letterSpacing:"0.18em", marginBottom:12 }} }}, "Required Skills"),
         React.createElement('div', {{ style:{{ display:"flex", flexWrap:"wrap", gap:6 }} }},
@@ -121,7 +139,6 @@ function App() {{
 
       React.createElement('div', {{ style:{{ height:1, background:"#2a2a2a", marginBottom:28 }} }}),
 
-      // Scoring Weights
       React.createElement('div', {{ style:{{ marginBottom:28 }} }},
         React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#4a4040", textTransform:"uppercase", letterSpacing:"0.18em", marginBottom:14 }} }}, "Scoring Weights"),
         ...[["Semantic Fit","45%","45%"],["Skill Match","40%","40%"],["Experience","15%","15%"]].map(([l,v,w]) =>
@@ -139,7 +156,6 @@ function App() {{
 
       React.createElement('div', {{ style:{{ height:1, background:"#2a2a2a", marginBottom:28 }} }}),
 
-      // Stats grid
       React.createElement('div', {{ style:{{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }} }},
         ...[
           [String(DATA.length), "Candidates"],
@@ -162,7 +178,6 @@ function App() {{
     // ── Main Content ──
     React.createElement('div', {{ style:{{ marginLeft:300, flex:1, padding:"52px 56px" }} }},
 
-      // Header
       React.createElement('div', {{ style:{{ marginBottom:48 }} }},
         React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#b0a898", textTransform:"uppercase", letterSpacing:"0.2em", marginBottom:12 }} }}, "Screening Results"),
         React.createElement('h1', {{ style:{{ fontFamily:"'Cormorant Garamond',serif", fontSize:56, fontWeight:300, color:"#1a1a1a", letterSpacing:"-1px", lineHeight:1.05 }} }},
@@ -171,7 +186,6 @@ function App() {{
         )
       ),
 
-      // Candidate Cards
       ...DATA.map(c => {{
         const isOpen = open === c.rank;
         return React.createElement('div', {{ key:c.rank, style:{{ marginBottom:10 }} }},
@@ -241,7 +255,6 @@ function App() {{
         );
       }}),
 
-      // Score Analysis
       React.createElement('div', {{ style:{{ marginTop:64 }} }},
         React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#b0a898", textTransform:"uppercase", letterSpacing:"0.2em", marginBottom:24 }} }}, "Score Analysis"),
         React.createElement('div', {{ style:{{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:14 }} }},
@@ -265,7 +278,6 @@ function App() {{
           )
         ),
 
-        // Skill Coverage vs Gaps
         React.createElement('div', {{ style:{{ background:"#faf8f4", border:"1px solid #ddd8ce", borderRadius:8, padding:"22px 24px", marginBottom:14 }} }},
           React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#b0a898", textTransform:"uppercase", letterSpacing:"0.14em", marginBottom:18 }} }}, "Skill Coverage vs Gaps"),
           ...DATA.map(c =>
@@ -291,7 +303,6 @@ function App() {{
           )
         ),
 
-        // Skill Matrix
         React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#b0a898", textTransform:"uppercase", letterSpacing:"0.2em", marginBottom:24, marginTop:48 }} }}, "Skill Matrix"),
         React.createElement('div', {{ style:{{ background:"#faf8f4", border:"1px solid #ddd8ce", borderRadius:8, padding:"22px 24px", overflowX:"auto" }} }},
           React.createElement('table', {{ style:{{ borderCollapse:"separate", borderSpacing:5 }} }},
@@ -329,7 +340,6 @@ function App() {{
         )
       ),
 
-      // Footer
       React.createElement('div', {{ style:{{ marginTop:64, paddingTop:22, borderTop:"1px solid #ddd8ce", display:"flex", justifyContent:"space-between" }} }},
         React.createElement('span', {{ style:{{ fontFamily:"'Cormorant Garamond',serif", fontSize:14, color:"#c0b8a8", fontStyle:"italic" }} }}, "Resume Screener · Senior Data Scientist"),
         React.createElement('span', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#c0b8a8", letterSpacing:"0.1em" }} }}, "scikit-learn · TF-IDF · Python")
@@ -344,4 +354,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(
 </html>
 """
 
-components.html(html, height=3200, scrolling=False)
+components.html(html, height=2800, scrolling=False)
