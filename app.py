@@ -14,7 +14,6 @@ from sample_data import JOB_DATA_SCIENTIST, JOB_BACKEND_ENGINEER, RESUMES
 
 st.set_page_config(page_title="Resume Screener", layout="wide", page_icon="📄")
 
-# Hide Streamlit default UI chrome
 st.markdown("""
 <style>
 #MainMenu, footer, header { visibility: hidden; }
@@ -23,12 +22,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ── Run Screener ──────────────────────────────────────────────────────────────
 screener = ResumeScreener()
 with st.spinner("Loading..."):
     df = screener.screen(RESUMES, JOB_DATA_SCIENTIST)
 
-# ── Build data for React ──────────────────────────────────────────────────────
 data = []
 for rank, row in df.iterrows():
     data.append({
@@ -48,7 +45,6 @@ for rank, row in df.iterrows():
 data_json = json.dumps(data)
 req_json = json.dumps(JOB_DATA_SCIENTIST["required_skills"])
 
-# ── Embed exact React dashboard as HTML ───────────────────────────────────────
 html = f"""
 <!DOCTYPE html>
 <html>
@@ -74,7 +70,6 @@ const DATA = {data_json};
 const REQ = {req_json};
 
 const {{ useState }} = React;
-
 const gradeLabel = s => s >= 65 ? "Strong" : s >= 45 ? "Moderate" : "Weak";
 const ini = n => n[0];
 
@@ -84,23 +79,51 @@ function App() {{
   return React.createElement('div', {{
     style: {{ display:"flex", minHeight:"100vh", fontFamily:"Georgia,serif", color:"#1a1a1a", background:"#f7f5f0" }}
   }},
-    // Sidebar
+
+    // ── Sidebar ──
     React.createElement('div', {{
       style: {{ width:300, background:"#1a1a1a", position:"fixed", top:0, left:0, height:"100vh", overflowY:"auto", display:"flex", flexDirection:"column", padding:"48px 36px", flexShrink:0 }}
     }},
+      // Title
       React.createElement('div', {{ style:{{ marginBottom:36 }} }},
         React.createElement('div', {{ style:{{ fontFamily:"'Cormorant Garamond',serif", fontSize:22, fontWeight:500, color:"#f5f0e8", letterSpacing:"0.02em", marginBottom:4 }} }}, "Resume Screener"),
         React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#4a4040", letterSpacing:"0.2em", textTransform:"uppercase" }} }}, "Candidate Analysis")
       ),
+
       React.createElement('div', {{ style:{{ height:1, background:"#2a2a2a", marginBottom:28 }} }}),
+
+      // Role
       React.createElement('div', {{ style:{{ marginBottom:28 }} }},
         React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#4a4040", textTransform:"uppercase", letterSpacing:"0.18em", marginBottom:10 }} }}, "Role"),
         React.createElement('div', {{ style:{{ fontFamily:"'Cormorant Garamond',serif", fontSize:20, fontWeight:500, color:"#f5f0e8", lineHeight:1.3 }} }}, "Senior Data Scientist"),
         React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:11, color:"#5a5040", marginTop:5 }} }}, "Full-time · Min. 4 years exp.")
       ),
+
       React.createElement('div', {{ style:{{ height:1, background:"#2a2a2a", marginBottom:28 }} }}),
+
+      // Job Description
       React.createElement('div', {{ style:{{ marginBottom:28 }} }},
-        React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#4a4040", textTransform:"uppercase", letterSpacing:"0.18em", marginBottom:12 }} }}, "Scoring Weights"),
+        React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#4a4040", textTransform:"uppercase", letterSpacing:"0.18em", marginBottom:12 }} }}, "Job Description"),
+        React.createElement('p', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:11.5, color:"#6a6050", lineHeight:1.9 }} }},
+          "We are looking for a Senior Data Scientist to join our AI team. You will build machine learning models, perform statistical analysis, and deploy scalable ML pipelines. Strong Python skills and experience with deep learning frameworks required."
+        )
+      ),
+
+      React.createElement('div', {{ style:{{ height:1, background:"#2a2a2a", marginBottom:28 }} }}),
+
+      // Required Skills
+      React.createElement('div', {{ style:{{ marginBottom:28 }} }},
+        React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#4a4040", textTransform:"uppercase", letterSpacing:"0.18em", marginBottom:12 }} }}, "Required Skills"),
+        React.createElement('div', {{ style:{{ display:"flex", flexWrap:"wrap", gap:6 }} }},
+          ...REQ.map(s => React.createElement('span', {{ key:s, style:{{ fontFamily:"'Inter',sans-serif", fontSize:10, color:"#8a7a60", border:"1px solid #2e2e2e", padding:"4px 10px", borderRadius:2, letterSpacing:"0.04em" }} }}, s))
+        )
+      ),
+
+      React.createElement('div', {{ style:{{ height:1, background:"#2a2a2a", marginBottom:28 }} }}),
+
+      // Scoring Weights
+      React.createElement('div', {{ style:{{ marginBottom:28 }} }},
+        React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#4a4040", textTransform:"uppercase", letterSpacing:"0.18em", marginBottom:14 }} }}, "Scoring Weights"),
         ...[["Semantic Fit","45%","45%"],["Skill Match","40%","40%"],["Experience","15%","15%"]].map(([l,v,w]) =>
           React.createElement('div', {{ key:l, style:{{ marginBottom:10 }} }},
             React.createElement('div', {{ style:{{ display:"flex", justifyContent:"space-between", marginBottom:5 }} }},
@@ -113,7 +136,10 @@ function App() {{
           )
         )
       ),
+
       React.createElement('div', {{ style:{{ height:1, background:"#2a2a2a", marginBottom:28 }} }}),
+
+      // Stats grid
       React.createElement('div', {{ style:{{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }} }},
         ...[
           [String(DATA.length), "Candidates"],
@@ -127,11 +153,16 @@ function App() {{
           )
         )
       ),
-      React.createElement('div', {{ style:{{ marginTop:"auto", paddingTop:32, fontFamily:"'Inter',sans-serif", fontSize:9, color:"#333", letterSpacing:"0.1em", textTransform:"uppercase" }} }}, "scikit-learn · TF-IDF · Python")
+
+      React.createElement('div', {{ style:{{ marginTop:"auto", paddingTop:32, fontFamily:"'Inter',sans-serif", fontSize:9, color:"#333", letterSpacing:"0.1em", textTransform:"uppercase" }} }},
+        "scikit-learn · TF-IDF · Python"
+      )
     ),
 
-    // Main content
+    // ── Main Content ──
     React.createElement('div', {{ style:{{ marginLeft:300, flex:1, padding:"52px 56px" }} }},
+
+      // Header
       React.createElement('div', {{ style:{{ marginBottom:48 }} }},
         React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#b0a898", textTransform:"uppercase", letterSpacing:"0.2em", marginBottom:12 }} }}, "Screening Results"),
         React.createElement('h1', {{ style:{{ fontFamily:"'Cormorant Garamond',serif", fontSize:56, fontWeight:300, color:"#1a1a1a", letterSpacing:"-1px", lineHeight:1.05 }} }},
@@ -140,7 +171,7 @@ function App() {{
         )
       ),
 
-      // Candidate cards
+      // Candidate Cards
       ...DATA.map(c => {{
         const isOpen = open === c.rank;
         return React.createElement('div', {{ key:c.rank, style:{{ marginBottom:10 }} }},
@@ -215,8 +246,8 @@ function App() {{
         React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#b0a898", textTransform:"uppercase", letterSpacing:"0.2em", marginBottom:24 }} }}, "Score Analysis"),
         React.createElement('div', {{ style:{{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:14 }} }},
           ...[
-            {{ title:"Overall Score (/100)", rows: DATA.map(c => ({{ name:c.name, value:c.score, max:100 }})) }},
-            {{ title:"Skill Match Score (%)", rows: DATA.map(c => ({{ name:c.name, value:c.skillScore, max:100 }})) }},
+            {{ title:"Overall Score (/100)", rows: DATA.map(c => ({{ name:c.name, value:c.score }})) }},
+            {{ title:"Skill Match Score (%)", rows: DATA.map(c => ({{ name:c.name, value:c.skillScore }})) }},
           ].map(chart =>
             React.createElement('div', {{ key:chart.title, style:{{ background:"#faf8f4", border:"1px solid #ddd8ce", borderRadius:8, padding:"22px 24px" }} }},
               React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#b0a898", textTransform:"uppercase", letterSpacing:"0.14em", marginBottom:18 }} }}, chart.title),
@@ -234,7 +265,7 @@ function App() {{
           )
         ),
 
-        // Skill Coverage
+        // Skill Coverage vs Gaps
         React.createElement('div', {{ style:{{ background:"#faf8f4", border:"1px solid #ddd8ce", borderRadius:8, padding:"22px 24px", marginBottom:14 }} }},
           React.createElement('div', {{ style:{{ fontFamily:"'Inter',sans-serif", fontSize:9, color:"#b0a898", textTransform:"uppercase", letterSpacing:"0.14em", marginBottom:18 }} }}, "Skill Coverage vs Gaps"),
           ...DATA.map(c =>
@@ -248,6 +279,13 @@ function App() {{
               React.createElement('div', {{ style:{{ width:120, fontFamily:"'Inter',sans-serif", fontSize:10, textAlign:"right", flexShrink:0 }} }},
                 React.createElement('span', {{ style:{{ color:"#2a2a2a", fontWeight:500 }} }}, `${{c.matched_skills.length}} matched`),
                 c.gaps.length > 0 && React.createElement('span', {{ style:{{ color:"#a09080", marginLeft:5 }} }}, `${{c.gaps.length}} gap${{c.gaps.length>1?"s":""}}`)
+              )
+            )
+          ),
+          React.createElement('div', {{ style:{{ display:"flex", gap:14, marginTop:12, paddingTop:12, borderTop:"1px solid #e8e4dc" }} }},
+            ...[["Matched","#2a2a2a","0.6"],["Gaps","#a09080","0.35"]].map(([l,col,o]) =>
+              React.createElement('div', {{ key:l, style:{{ display:"flex", alignItems:"center", gap:5, fontFamily:"'Inter',sans-serif", fontSize:9, color:"#9a9080" }} }},
+                React.createElement('div', {{ style:{{ width:10, height:10, borderRadius:2, background:col, opacity:parseFloat(o) }} }}), l
               )
             )
           )
